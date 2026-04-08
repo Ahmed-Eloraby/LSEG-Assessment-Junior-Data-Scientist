@@ -11,7 +11,7 @@ import streamlit as st
 from utils.ui import inject_css, ACCENT, ACCENT2, BG_CARD, TEXT_MUTE
 
 st.set_page_config(
-    page_title="OpenPermID Explorer",
+    page_title="LSEG Assessment",
     page_icon="🏚️",
     layout="wide",
     initial_sidebar_state="expanded",
@@ -52,36 +52,6 @@ st.sidebar.markdown(
     """,
     unsafe_allow_html=True,
 )
-# def apply_sidebar_style():
-#     st.markdown(
-#         """
-#         <style>
-#         section[data-testid="stSidebar"] * {
-#             color: white !important;
-#         }
-#         </style>
-#         """,
-#         unsafe_allow_html=True,
-#     )
-
-
-# with st.sidebar:
-#     st.markdown(
-#         f"""<div style="padding:1rem 0 0.5rem 0;">
-#               <span style="font-family:'Space Mono',monospace;font-size:1rem;
-#                            color:{ACCENT};font-weight:700;">◆ OpenPermID</span><br/>
-#               <span style="color:{TEXT_MUTE};font-size:0.75rem;">Graph Data Explorer</span>
-#             </div>""",
-#         unsafe_allow_html=True,
-#     )
-#     st.markdown("---")
-#     st.markdown(
-#         f"""<p>Navigate using the <strong>pages</strong> below.<br/>
-#         Each page corresponds to one entity in the assessment.</p>""",
-#         unsafe_allow_html=True,
-#     )
-#     st.markdown("---")
-#     st.caption("Built with Python · RDFLib · Plotly · Streamlit")
 
 # ── Hero ──────────────────────────────────────────────────────────────────────
 st.markdown(
