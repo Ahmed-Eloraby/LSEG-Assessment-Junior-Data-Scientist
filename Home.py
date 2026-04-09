@@ -1,5 +1,5 @@
 """
-Home.py — OpenPermID Graph Explorer
+Home.py — Analysis of Financial Knowledge Graph Data Graph Explorer
 Entry point for the Streamlit multi-page app.
 """
 
@@ -59,7 +59,7 @@ st.markdown(
     <div style="text-align:center;padding:3rem 1rem 2rem;">
       <div style="font-family:'Space Mono',monospace;font-size:2.8rem;
                   color:{ACCENT2};line-height:1.1;">
-        OpenPermID<br/>
+        Analysis of Financial Knowledge Graph Data<br/>
         <span style="color:{ACCENT};">Graph Explorer</span>
       </div>
       <p style="color:{TEXT_MUTE};font-size:1rem;margin-top:1rem;max-width:560px;
