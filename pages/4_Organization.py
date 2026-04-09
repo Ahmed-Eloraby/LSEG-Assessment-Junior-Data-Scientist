@@ -19,7 +19,7 @@ st.set_page_config(
 )
 inject_css()
 page_title(
-    "🏢", "Organization", "Q4 — Companies, countries, sectors, and organisation types"
+    "🏢", "Organization", "Companies, countries, sectors, and organization types"
 )
 
 df = load_triples("organization")
@@ -61,8 +61,6 @@ with tab1:
             df[df["predicate"] == "label"]["object"],
         )
     )
-    print(label_map)
-    print("Balabizo")
     if not country_df.empty:
 
         cc = country_df["object"].value_counts().reset_index()

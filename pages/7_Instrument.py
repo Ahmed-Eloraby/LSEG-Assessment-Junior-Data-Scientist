@@ -16,9 +16,7 @@ from utils.ui import inject_css, page_title, section, metric_row, ACCENT
 
 st.set_page_config(page_title="Instrument · OpenPermID", page_icon="🔧", layout="wide")
 inject_css()
-page_title(
-    "🔧", "Instrument", "Q7 — Instrument types, asset class linkage, and issuers"
-)
+page_title("🔧", "Instrument", "Instrument types, asset class linkage, and issuers")
 
 df = load_triples("instrument")
 if df.empty:

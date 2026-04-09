@@ -17,7 +17,7 @@ from utils.ui import inject_css, page_title, section, metric_row, ACCENT
 
 st.set_page_config(page_title="Person · OpenPermID", page_icon="👤", layout="wide")
 inject_css()
-page_title("👤", "Person", "Q5 — Executives, roles, and employer relationships")
+page_title("👤", "Person", "Executives, roles, and employer relationships")
 
 df = load_triples("person")
 

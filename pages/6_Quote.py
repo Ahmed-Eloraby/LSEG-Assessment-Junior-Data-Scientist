@@ -1,6 +1,7 @@
 """Page 6 — Quote Explorer (Q6)"""
 
 import os, sys
+import pandas as pd
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
 
@@ -16,14 +17,45 @@ from utils.ui import inject_css, page_title, section, metric_row, ACCENT
 
 st.set_page_config(page_title="Quote · OpenPermID", page_icon="📈", layout="wide")
 inject_css()
-page_title("📈", "Quote", "Q6 — Exchange listings, quote types, and currency linkage")
+page_title("📈", "Quote", "Exchange listings, quote types, and currency linkage")
 
 df = load_triples("quote")
+
+df_tri = df[df["predicate"].isin(["quotedOrganization", "lotSize", "quoteCurrency"])]
+table_tri = df_tri.pivot_table(
+    index="subject", columns="predicate", values="object", aggfunc="first"
+).reset_index()
+
+table_tri["lotSize"] = pd.to_numeric(table_tri["lotSize"], errors="coerce")
+
+
+df_currency = load_triples("currency")
+label_map_currency = dict(
+    zip(
+        df_currency[df_currency["predicate"] == "label"]["subject"],
+        df_currency[df_currency["predicate"] == "label"]["object"],
+    )
+)
+df_organization = load_triples("organization")
+label_map_organization = dict(
+    zip(
+        df_organization[df_organization["predicate"] == "label"]["subject"],
+        df_organization[df_organization["predicate"] == "label"]["object"],
+    )
+)
+table_tri["quotedOrganization"] = (
+    table_tri["quotedOrganization"]
+    .map(label_map_organization)
+    .fillna(table_tri["quotedOrganization"])
+)
+
 if df.empty:
     st.stop()
 
 exch_df = df[df["predicate"] == "listedOn"]
-ccy_df = df[df["predicate"] == "quoteCurrency"]
+currency_df = df[df["predicate"] == "quoteCurrency"]
+label_map_currency = dict(zip())
+lotSize_df = df[df["predicate"] == "lotSize"]
 type_df = df[df["predicate"] == "type"]
 
 metric_row(
@@ -61,8 +93,34 @@ with tab1:
             )
             st.plotly_chart(fig, use_container_width=True)
 
+    section("Quote Currency Distribution")
+    if not currency_df.empty:
+        cc = currency_df["object"].value_counts().reset_index()
+        cc.columns = ["Quote Currency", "Count"]
+        cc["Quote Currency"] = (
+            cc["Quote Currency"].map(label_map_currency).fillna(cc["Quote Currency"])
+        )
+
+        col1, col2 = st.columns([2, 3])
+        with col1:
+            st.dataframe(cc, use_container_width=True, hide_index=True)
+        with col2:
+            fig = px.pie(
+                cc,
+                names="Quote Currency",
+                values="Count",
+                hole=0.5,
+                template="plotly_dark",
+                color_discrete_sequence=px.colors.qualitative.Bold,
+            )
+            fig.update_layout(
+                paper_bgcolor="#ffffff", margin=dict(l=0, r=0, t=0, b=0), height=280
+            )
+            st.plotly_chart(fig, use_container_width=True)
+
     section("Quotes by Exchange")
     if not exch_df.empty:
+        print(table_tri.columns)
         ec = exch_df["object"].value_counts().reset_index()
         ec.columns = ["Exchange", "Quote Count"]
         fig2 = px.bar(
@@ -82,6 +140,47 @@ with tab1:
         )
         st.plotly_chart(fig2, use_container_width=True)
 
+    section("Total Lot Size per Organization")
+    col1, col2 = st.columns([1, 3])
+
+    lot_by_org = (
+        table_tri.copy()
+        .groupby("quotedOrganization")["lotSize"]
+        .sum()
+        .sort_values(ascending=False)
+        .reset_index()
+    )
+    top_n = st.slider("Top N organizations", 5, 50, 20)
+    fig = px.bar(
+        lot_by_org.head(top_n),
+        x="quotedOrganization",
+        y="lotSize",
+        template="plotly_dark",
+        color="lotSize",
+        color_continuous_scale=[[0, "#1e3a5f"], [1, ACCENT]],
+    )
+    fig.update_layout(
+        plot_bgcolor="#ffffff",
+        paper_bgcolor="#ffffff",
+        coloraxis_showscale=False,
+        margin=dict(l=0, r=0, t=10, b=0),
+        height=320,
+    )
+    st.plotly_chart(fig, use_container_width=True)
+    table_tri["quoteCurrency"] = (
+        table_tri["quoteCurrency"]
+        .map(label_map_currency)
+        .fillna(table_tri["quoteCurrency"])
+    )
+    currency_table = (
+        table_tri.groupby("quotedOrganization")["quoteCurrency"]
+        .apply(lambda x: sorted(set(x.dropna())))
+        .reset_index()
+    )
+    print("Ba3lol")
+    print(currency_table.columns)
+
+    st.dataframe(currency_table)
 
 # ── Tab 2 ─────────────────────────────────────────────────────────────────────
 with tab2:
